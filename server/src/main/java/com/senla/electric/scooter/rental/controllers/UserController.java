@@ -19,7 +19,7 @@ public class UserController {
     private final IUserService userService;
 
     @PostMapping
-    public ResponseEntity<UserDataDto> addUser(@RequestBody UserDataDto dto) {
+    public ResponseEntity<UserDto> addUser(@RequestBody UserDataDto dto) {
         List<String> roles = new ArrayList<>();
         roles.add("USER");
         return ResponseEntity.ok(userService.save(dto, roles));
@@ -31,15 +31,14 @@ public class UserController {
         return ResponseEntity.ok(userService.update(id, dto));
     }
 
-    @PutMapping("/account/{id}")
-    public ResponseEntity<AccountDto> updateAccountData(@PathVariable Long id,
-                                                        @RequestParam AccountDto dto) {
-        return ResponseEntity.ok(userService.updateAccount(id, dto));
-    }
-
     @DeleteMapping
     public ResponseEntity<UserDto> deleteUser(@RequestParam UserDataDto dto) {
         return ResponseEntity.ok(userService.delete(dto));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<UserDto>> getAll() {
+        return ResponseEntity.ok(userService.getAll());
     }
 
 }

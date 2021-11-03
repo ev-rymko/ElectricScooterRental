@@ -90,54 +90,6 @@ public class RentServiceTest {
     }
 
     @Test
-    void addForHourWithExceptionTest() {
-        RentForHourDto dto = new RentForHourDto(new AccountDto(), new RentalPointDto(), new ScooterDto(), 2);
-        Account account = new Account();
-        RentalPoint rentalPoint = new RentalPoint();
-        ScooterPrice scooterPrice = new ScooterPrice();
-        scooterPrice.setId(2L);
-        scooterPrice.setPricePerHour(4);
-        scooterPrice.setSubscriptionPricePerDay(5);
-        scooterPrice.setScooterType("type");
-        Scooter scooter = new Scooter();
-        scooter.setScooterPrice(scooterPrice);
-        Rent rent = new Rent.Builder()
-                .withAccount(account)
-                .withRentalPoint(rentalPoint)
-                .withScooter(scooter)
-                .withHours(2)
-                .build();
-
-        ScooterPriceDto scooterPriceDto = new ScooterPriceDto();
-        scooterPriceDto.setId(2L);
-        scooterPriceDto.setPricePerHour(4);
-        scooterPriceDto.setSubscriptionPricePerDay(5);
-        scooterPriceDto.setScooterType("type");
-        ScooterDto scooterDto = new ScooterDto();
-        scooterDto.setScooterPrice(scooterPriceDto);
-        RentDto rentDto = new RentDto();
-        rentDto.setId(1L);
-        rentDto.setRentDate(LocalDateTime.now());
-        rentDto.setAccount(new AccountDto());
-        rentDto.setScooter(scooterDto);
-        rentDto.setRentalPoint(new RentalPointDto());
-        rentDto.setHours(2);
-
-        Mockito.when(rentDao.save(rent)).thenReturn(null);
-        Mockito.when(scooterPriceDao.findByName(rentDto.getScooter().getScooterPrice().getScooterType())).thenReturn(scooterPrice);
-
-        Mockito.when(mapper.map(dto.getAccount(), Account.class)).thenReturn(account);
-        Mockito.when(mapper.map(dto.getScooter(), Scooter.class)).thenReturn(scooter);
-        Mockito.when(mapper.map(dto.getRentalPoint(), RentalPoint.class)).thenReturn(rentalPoint);
-        Mockito.when(mapper.map(dto, Rent.class)).thenReturn(rent);
-        Mockito.when(mapper.map(dto, RentDto.class)).thenReturn(rentDto);
-        Mockito.when(mapper.map(rent, RentDto.class)).thenReturn(rentDto);
-
-        assertThrows(PermissionDeniedException.class, () -> rentService.addForHour(dto));
-
-    }
-
-    @Test
     void addSubscriptionTest() {
         SubscriptionRentDto dto = new SubscriptionRentDto(new AccountDto(), new RentalPointDto(), new ScooterDto(), Subscription.DAY);
         Account account = new Account();
@@ -185,53 +137,6 @@ public class RentServiceTest {
 
         assertNotNull(resultRent);
         assertEquals(1L, resultRent.getId());
-    }
-
-    @Test
-    void addSubscriptionWithExceptionTest() {
-        SubscriptionRentDto dto = new SubscriptionRentDto(new AccountDto(), new RentalPointDto(), new ScooterDto(), Subscription.DAY);
-        Account account = new Account();
-        RentalPoint rentalPoint = new RentalPoint();
-        ScooterPrice scooterPrice = new ScooterPrice();
-        scooterPrice.setId(2L);
-        scooterPrice.setPricePerHour(4);
-        scooterPrice.setSubscriptionPricePerDay(5);
-        scooterPrice.setScooterType("type");
-        Scooter scooter = new Scooter();
-        scooter.setScooterPrice(scooterPrice);
-        Rent rent = new Rent.Builder()
-                .withAccount(account)
-                .withRentalPoint(rentalPoint)
-                .withScooter(scooter)
-                .withSubscription(Subscription.DAY)
-                .build();
-
-        ScooterPriceDto scooterPriceDto = new ScooterPriceDto();
-        scooterPriceDto.setId(2L);
-        scooterPriceDto.setPricePerHour(4);
-        scooterPriceDto.setSubscriptionPricePerDay(5);
-        scooterPriceDto.setScooterType("type");
-        ScooterDto scooterDto = new ScooterDto();
-        scooterDto.setScooterPrice(scooterPriceDto);
-        RentDto rentDto = new RentDto();
-        rentDto.setId(1L);
-        rentDto.setRentDate(LocalDateTime.now());
-        rentDto.setAccount(new AccountDto());
-        rentDto.setScooter(scooterDto);
-        rentDto.setRentalPoint(new RentalPointDto());
-        rentDto.setSubscription(Subscription.DAY);
-
-        Mockito.when(rentDao.save(rent)).thenReturn(null);
-        Mockito.when(scooterPriceDao.findByName(rentDto.getScooter().getScooterPrice().getScooterType())).thenReturn(scooterPrice);
-
-        Mockito.when(mapper.map(dto.getAccount(), Account.class)).thenReturn(account);
-        Mockito.when(mapper.map(dto.getScooter(), Scooter.class)).thenReturn(scooter);
-        Mockito.when(mapper.map(dto.getRentalPoint(), RentalPoint.class)).thenReturn(rentalPoint);
-        Mockito.when(mapper.map(dto, Rent.class)).thenReturn(rent);
-        Mockito.when(mapper.map(dto, RentDto.class)).thenReturn(rentDto);
-        Mockito.when(mapper.map(rent, RentDto.class)).thenReturn(rentDto);
-
-        assertThrows(PermissionDeniedException.class, () -> rentService.addSubscription(dto));
     }
 
     @Test

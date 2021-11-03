@@ -48,7 +48,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .hasAnyAuthority("USER");
         http.authorizeRequests().antMatchers("/rentals/users/**").hasAnyAuthority("USER");
         http.authorizeRequests().antMatchers("/scooters/users/**").hasAnyAuthority("USER");
-        http.authorizeRequests().antMatchers("scooter-prices/users/**").hasAnyAuthority("USER");
+        http.authorizeRequests().antMatchers("/scooter-prices/users/**").hasAnyAuthority("USER");
+        http.authorizeRequests().antMatchers("/accounts/**").hasAnyAuthority("USER");
 
         http.authorizeRequests().antMatchers("/admins/**").hasAnyAuthority("ADMIN");
         http.authorizeRequests().antMatchers("/rentals/admins/**").hasAnyAuthority("ADMIN");

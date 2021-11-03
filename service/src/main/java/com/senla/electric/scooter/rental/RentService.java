@@ -6,10 +6,9 @@ import com.senla.electric.scooter.rental.dto.RentForHourDto;
 import com.senla.electric.scooter.rental.dto.SubscriptionRentDto;
 import com.senla.electric.scooter.rental.exceptions.DataNotFoundException;
 import com.senla.electric.scooter.rental.exceptions.InvalidPriceException;
-import com.senla.electric.scooter.rental.exceptions.PermissionDeniedException;
-import com.senla.electric.scooter.rental.iDao.IAccountDao;
 import com.senla.electric.scooter.rental.iDao.IRentDao;
-import com.senla.electric.scooter.rental.iDao.IScooterPriceDao;
+import com.senla.electric.scooter.rental.iService.IAccountService;
+import com.senla.electric.scooter.rental.iService.IScooterPriceService;
 import com.senla.electric.scooter.rental.model.*;
 import com.senla.electric.scooter.rental.iService.IRentService;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +27,10 @@ public class RentService implements IRentService {
 
     private static final String RENT_NOT_FOUND_EXCEPTION = "Rent not found. ";
     private static final String INVALID_PRICE_EXCEPTION = "The price must be greater than or equal to zero. ";
-    private static final String FAILED_SAVE_EXCEPTION = "Rent was not save";
     private static final String EMPTY_HISTORY_EXCEPTION = "The rental history is empty.";
     private final IRentDao rentDao;
-    private final IAccountDao accountDao;
-    private final IScooterPriceDao scooterPriceDao;
+    private final IAccountService accountService;
+    private final IScooterPriceService scooterPriceService;
     private final ModelMapper mapper;
 
     @Override
@@ -45,9 +43,6 @@ public class RentService implements IRentService {
                 .withPrice(countFinalPrice(mapper.map(rent, RentDto.class)))
                 .build();
         Rent savedRent = rentDao.save(resultRent);
-        if (savedRent == null) {
-            throw new PermissionDeniedException(FAILED_SAVE_EXCEPTION);
-        }
         return mapper.map(savedRent, RentDto.class);
     }
 
@@ -61,18 +56,12 @@ public class RentService implements IRentService {
                 .withPrice(countFinalPrice(mapper.map(rent, RentDto.class)))
                 .build();
         Rent savedRent = rentDao.save(resultRent);
-        if (savedRent == null) {
-            throw new PermissionDeniedException(FAILED_SAVE_EXCEPTION);
-        }
         return mapper.map(savedRent, RentDto.class);
     }
 
     @Override
     public RentDto setMileage(Long id, double mileage) {
-        Rent rentById = rentDao.getById(id);
-        if (rentById == null) {
-            throw new DataNotFoundException(RENT_NOT_FOUND_EXCEPTION);
-        }
+        Rent rentById = checkRentById(id);
         rentById.setMileage(mileage);
         Rent resultRent = rentDao.update(id, rentById);
         return mapper.map(resultRent, RentDto.class);
@@ -80,10 +69,7 @@ public class RentService implements IRentService {
 
     @Override
     public RentDto update(Long id, RentDto rent) {
-        Rent rentById = rentDao.getById(id);
-        if (rentById == null) {
-            throw new DataNotFoundException(RENT_NOT_FOUND_EXCEPTION);
-        }
+        Rent rentById = checkRentById(id);
         rent.setRentDate(rentById.getRentDate());
         rent.setFinalPrice(countFinalPrice(rent));
         Rent resultRent = rentDao.update(id, mapper.map(rent, Rent.class));
@@ -110,7 +96,7 @@ public class RentService implements IRentService {
 
     @Override
     public List<RentDto> getHistoryForClient(LoginDto dto) {
-        List<RentDto> rentals = rentDao.getRentalHistoryForClient(accountDao.getUserByLogin(dto.getLogin())).stream()
+        List<RentDto> rentals = rentDao.getRentalHistoryForClient(accountService.getUserByLogin(dto.getLogin())).stream()
                 .map(rent -> mapper.map(rent, RentDto.class))
                 .collect(Collectors.toList());
         if (rentals.size() == 0) {
@@ -121,13 +107,8 @@ public class RentService implements IRentService {
 
     @Override
     public RentDto setPrice(Long rentId, double newPrice) {
-        if (newPrice < 0) {
-            throw new InvalidPriceException(INVALID_PRICE_EXCEPTION);
-        }
-        Rent rent = rentDao.getById(rentId);
-        if (rent == null) {
-            throw new DataNotFoundException(RENT_NOT_FOUND_EXCEPTION);
-        }
+        checkPrice(newPrice);
+        Rent rent = checkRentById(rentId);
         rent.setFinalPrice(newPrice);
         Rent updatedRent = rentDao.update(rentId, rent);
         return mapper.map(updatedRent, RentDto.class);
@@ -135,21 +116,16 @@ public class RentService implements IRentService {
 
     @Override
     public RentDto setDiscount(Long rentId, int percent) {
-        Rent rent = rentDao.getById(rentId);
-        if (rent == null) {
-            throw new DataNotFoundException(RENT_NOT_FOUND_EXCEPTION);
-        }
+        Rent rent = checkRentById(rentId);
         double newPrice = (rent.getFinalPrice() * percent) / 100;
-        if (newPrice < 0) {
-            throw new InvalidPriceException(INVALID_PRICE_EXCEPTION);
-        }
+        checkPrice(newPrice);
         rent.setFinalPrice(newPrice);
         Rent updatedRent = rentDao.update(rentId, rent);
         return mapper.map(updatedRent, RentDto.class);
     }
 
     private Double countFinalPrice(RentDto rent) {
-        ScooterPrice scooterPrice = scooterPriceDao.findByName(rent.getScooter().getScooterPrice().getScooterType());
+        ScooterPrice scooterPrice = scooterPriceService.findByName(rent.getScooter().getScooterPrice().getScooterType());
         double finalPrice = 0;
         if (rent.getHours() != 0) {
             finalPrice = scooterPrice.getPricePerHour() * rent.getHours();
@@ -171,5 +147,20 @@ public class RentService implements IRentService {
             }
         }
         return finalPrice;
+    }
+
+    private Rent checkRentById(Long id){
+        Rent rent = rentDao.getById(id);
+        if(rent == null){
+            throw new DataNotFoundException(RENT_NOT_FOUND_EXCEPTION);
+        } else {
+            return rent;
+        }
+    }
+
+    private void checkPrice(double price){
+        if(price < 0){
+            throw new InvalidPriceException(INVALID_PRICE_EXCEPTION);
+        }
     }
 }

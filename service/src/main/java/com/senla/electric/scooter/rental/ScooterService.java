@@ -30,19 +30,14 @@ public class ScooterService implements IScooterService {
 
     @Override
     public ScooterDto update(Long id, ScooterDto scooter) {
-        if (scooterDao.getById(id) == null) {
-            throw new DataNotFoundException(SCOOTER_NOT_FOUND_BY_ID_EXCEPTION);
-        }
+        checkScooterById(id);
         Scooter resultScooter = scooterDao.update(id, mapper.map(scooter, Scooter.class));
         return mapper.map(resultScooter, ScooterDto.class);
     }
 
     @Override
     public ScooterDto delete(Long scooterId) {
-        Scooter scooterForDelete = scooterDao.getById(scooterId);
-        if (scooterForDelete == null) {
-            throw new DataNotFoundException(SCOOTER_NOT_FOUND_BY_ID_EXCEPTION);
-        }
+        Scooter scooterForDelete = checkScooterById(scooterId);
         Scooter resultScooter = scooterDao.delete(scooterForDelete);
         return mapper.map(resultScooter, ScooterDto.class);
     }
@@ -52,5 +47,14 @@ public class ScooterService implements IScooterService {
         return scooterDao.getAll().stream()
                 .map(scooter -> mapper.map(scooter, ScooterDto.class))
                 .collect(Collectors.toList());
+    }
+
+    private Scooter checkScooterById(Long id) {
+        Scooter scooter = scooterDao.getById(id);
+        if (scooter == null) {
+            throw new DataNotFoundException(SCOOTER_NOT_FOUND_BY_ID_EXCEPTION);
+        } else {
+            return scooter;
+        }
     }
 }
