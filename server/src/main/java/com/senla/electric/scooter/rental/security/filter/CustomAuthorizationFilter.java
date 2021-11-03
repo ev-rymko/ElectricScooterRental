@@ -1,4 +1,4 @@
-package com.senla.finalProject.security.filter;
+package com.senla.electric.scooter.rental.security.filter;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;

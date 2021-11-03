@@ -1,8 +1,7 @@
-package com.senla.finalProject;
+package com.senla.electric.scooter.rental;
 
-import com.senla.finalProject.enums.ScooterType;
-import com.senla.finalProject.iDao.IScooterPriceDao;
-import com.senla.finalProject.model.ScooterPrice;
+import com.senla.electric.scooter.rental.iDao.IScooterPriceDao;
+import com.senla.electric.scooter.rental.model.ScooterPrice;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -25,7 +24,7 @@ public class ScooterPriceDao extends AbstractDao<ScooterPrice> implements IScoot
         Root<ScooterPrice> scooterPriceRoot = scooterPriceCriteriaQuery.from(ScooterPrice.class);
         scooterPriceCriteriaQuery.select(scooterPriceRoot);
         Predicate predicateForName
-                = cb.equal(scooterPriceRoot.get("scooterType"), ScooterType.valueOf(name));
+                = cb.equal(scooterPriceRoot.get("scooterType"), name);
         scooterPriceCriteriaQuery.where(predicateForName);
         List<ScooterPrice> scooterPrices = entityManager.createQuery(scooterPriceCriteriaQuery)
                 .getResultList();

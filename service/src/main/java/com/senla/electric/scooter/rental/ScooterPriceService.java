@@ -1,12 +1,12 @@
-package com.senla.finalProject;
+package com.senla.electric.scooter.rental;
 
-import com.senla.finalProject.dto.ScooterPriceDto;
-import com.senla.finalProject.exceptions.DataNotFoundException;
-import com.senla.finalProject.exceptions.InvalidPriceException;
-import com.senla.finalProject.exceptions.PermissionDeniedException;
-import com.senla.finalProject.iDao.IScooterPriceDao;
-import com.senla.finalProject.iService.IScooterPriceService;
-import com.senla.finalProject.model.ScooterPrice;
+import com.senla.electric.scooter.rental.exceptions.DataNotFoundException;
+import com.senla.electric.scooter.rental.exceptions.InvalidPriceException;
+import com.senla.electric.scooter.rental.exceptions.PermissionDeniedException;
+import com.senla.electric.scooter.rental.dto.ScooterPriceDto;
+import com.senla.electric.scooter.rental.iDao.IScooterPriceDao;
+import com.senla.electric.scooter.rental.iService.IScooterPriceService;
+import com.senla.electric.scooter.rental.model.ScooterPrice;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -45,6 +45,16 @@ public class ScooterPriceService implements IScooterPriceService {
         }
         ScooterPrice scooterPrice = scooterPriceDao.update(id, mapper.map(dto, ScooterPrice.class));
         return mapper.map(scooterPrice, ScooterPriceDto.class);
+    }
+
+    @Override
+    public ScooterPriceDto delete(Long id) {
+        ScooterPrice scooterPriceForDelete = scooterPriceDao.getById(id);
+        if (scooterPriceForDelete == null) {
+            throw new DataNotFoundException(SCOOTER_PRICE_NOT_FOUND_EXCEPTION);
+        }
+        ScooterPrice resultScooterPrice = scooterPriceDao.delete(scooterPriceForDelete);
+        return mapper.map(resultScooterPrice, ScooterPriceDto.class);
     }
 
     @Override

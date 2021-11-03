@@ -1,4 +1,4 @@
-package com.senla.finalProject.dto;
+package com.senla.electric.scooter.rental.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

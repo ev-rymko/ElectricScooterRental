@@ -1,4 +1,4 @@
-package com.senla.finalProject.exceptions;
+package com.senla.electric.scooter.rental.exceptions;
 
 public class DataDuplicationException extends RuntimeException{
 

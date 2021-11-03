@@ -1,17 +1,17 @@
-package com.senla.finalProject;
+package com.senla.electric.scooter.rental;
 
-import com.senla.finalProject.dto.AccountDto;
-import com.senla.finalProject.dto.UserDataDto;
-import com.senla.finalProject.dto.UserDto;
-import com.senla.finalProject.exceptions.BadDataException;
-import com.senla.finalProject.exceptions.DataDuplicationException;
-import com.senla.finalProject.exceptions.DataNotFoundException;
-import com.senla.finalProject.iDao.IAccountDao;
-import com.senla.finalProject.iDao.IRoleDao;
-import com.senla.finalProject.iDao.IUserDao;
-import com.senla.finalProject.iService.IUserService;
-import com.senla.finalProject.model.Account;
-import com.senla.finalProject.model.User;
+import com.senla.electric.scooter.rental.dto.AccountDto;
+import com.senla.electric.scooter.rental.dto.UserDto;
+import com.senla.electric.scooter.rental.exceptions.BadDataException;
+import com.senla.electric.scooter.rental.exceptions.DataDuplicationException;
+import com.senla.electric.scooter.rental.exceptions.DataNotFoundException;
+import com.senla.electric.scooter.rental.dto.UserDataDto;
+import com.senla.electric.scooter.rental.iDao.IAccountDao;
+import com.senla.electric.scooter.rental.iDao.IRoleDao;
+import com.senla.electric.scooter.rental.iDao.IUserDao;
+import com.senla.electric.scooter.rental.iService.IUserService;
+import com.senla.electric.scooter.rental.model.Account;
+import com.senla.electric.scooter.rental.model.User;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -81,15 +81,15 @@ public class UserService implements IUserService {
 
     @Override
     public AccountDto updateAccount(Long id, AccountDto dto) {
-        Account updateAccount = mapper.map(dto, Account.class);
         if (accountDao.getById(id) == null) {
             throw new BadDataException(ACCOUNT_NOT_FOUND_BY_ID_EXCEPTION);
         }
+        Account updateAccount = accountDao.update(id, mapper.map(dto, Account.class));
         return mapper.map(updateAccount, AccountDto.class);
     }
 
     @Override
-    public UserDataDto delete(UserDataDto user) {
+    public UserDto delete(UserDataDto user) {
         User userForDelete = userDao.getUserByEmail(user.getEmail());
         Account accountForDelete = accountDao.getUserByLogin(user.getLogin());
         if (userForDelete == null) {
@@ -98,8 +98,8 @@ public class UserService implements IUserService {
         if (accountForDelete == null) {
             throw new DataNotFoundException(ACCOUNT_NOT_FOUND_BY_LOGIN_EXCEPTION);
         }
-        userDao.delete(userDao.getUserByEmail(user.getEmail()));
+        User deletedUser = userDao.delete(userDao.getUserByEmail(user.getEmail()));
         accountDao.delete(accountDao.getUserByLogin(user.getLogin()));
-        return user;
+        return mapper.map(deletedUser, UserDto.class);
     }
 }

@@ -1,9 +1,8 @@
-package com.senla.finalProject.iService;
+package com.senla.electric.scooter.rental.iService;
 
-import com.senla.finalProject.dto.AccountDto;
-import com.senla.finalProject.dto.UserDataDto;
-import com.senla.finalProject.dto.UserDto;
-import com.senla.finalProject.model.Role;
+import com.senla.electric.scooter.rental.dto.AccountDto;
+import com.senla.electric.scooter.rental.dto.UserDataDto;
+import com.senla.electric.scooter.rental.dto.UserDto;
 
 import java.util.List;
 
@@ -15,5 +14,5 @@ public interface IUserService {
 
     AccountDto updateAccount(Long id, AccountDto dto);
 
-    UserDataDto delete(UserDataDto user);
+    UserDto delete(UserDataDto user);
 }

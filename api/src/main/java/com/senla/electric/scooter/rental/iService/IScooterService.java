@@ -1,6 +1,6 @@
-package com.senla.finalProject.iService;
+package com.senla.electric.scooter.rental.iService;
 
-import com.senla.finalProject.dto.ScooterDto;
+import com.senla.electric.scooter.rental.dto.ScooterDto;
 
 import java.util.List;
 

@@ -1,16 +1,17 @@
-package com.senla.finalProject;
+package com.senla.electric.scooter.rental;
 
-import com.senla.finalProject.dto.LoginDto;
-import com.senla.finalProject.dto.RentDto;
-import com.senla.finalProject.exceptions.DataNotFoundException;
-import com.senla.finalProject.exceptions.InvalidPriceException;
-import com.senla.finalProject.exceptions.PermissionDeniedException;
-import com.senla.finalProject.iDao.IAccountDao;
-import com.senla.finalProject.iDao.IRentDao;
-import com.senla.finalProject.iDao.IScooterPriceDao;
-import com.senla.finalProject.iService.IRentService;
-import com.senla.finalProject.model.Rent;
-import com.senla.finalProject.model.ScooterPrice;
+import com.senla.electric.scooter.rental.dto.LoginDto;
+import com.senla.electric.scooter.rental.dto.RentDto;
+import com.senla.electric.scooter.rental.dto.RentForHourDto;
+import com.senla.electric.scooter.rental.dto.SubscriptionRentDto;
+import com.senla.electric.scooter.rental.exceptions.DataNotFoundException;
+import com.senla.electric.scooter.rental.exceptions.InvalidPriceException;
+import com.senla.electric.scooter.rental.exceptions.PermissionDeniedException;
+import com.senla.electric.scooter.rental.iDao.IAccountDao;
+import com.senla.electric.scooter.rental.iDao.IRentDao;
+import com.senla.electric.scooter.rental.iDao.IScooterPriceDao;
+import com.senla.electric.scooter.rental.model.*;
+import com.senla.electric.scooter.rental.iService.IRentService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -28,20 +29,52 @@ public class RentService implements IRentService {
     private static final String RENT_NOT_FOUND_EXCEPTION = "Rent not found. ";
     private static final String INVALID_PRICE_EXCEPTION = "The price must be greater than or equal to zero. ";
     private static final String FAILED_SAVE_EXCEPTION = "Rent was not save";
+    private static final String EMPTY_HISTORY_EXCEPTION = "The rental history is empty.";
     private final IRentDao rentDao;
     private final IAccountDao accountDao;
     private final IScooterPriceDao scooterPriceDao;
     private final ModelMapper mapper;
 
     @Override
-    public RentDto save(RentDto rent) {
-        Double finalPrice = countFinalPrice(rent);
-        rent.setFinalPrice(finalPrice);
-        rent.setRentDate(LocalDateTime.now());
-        Rent resultRent = rentDao.save(mapper.map(rent, Rent.class));
-        if(resultRent == null){
+    public RentDto addForHour(RentForHourDto rent) {
+        Rent resultRent = new Rent.Builder().withRentDate(LocalDateTime.now())
+                .withAccount(mapper.map(rent.getAccount(), Account.class))
+                .withRentalPoint(mapper.map(rent.getRentalPoint(), RentalPoint.class))
+                .withScooter(mapper.map(rent.getScooter(), Scooter.class))
+                .withHours(rent.getHours())
+                .withPrice(countFinalPrice(mapper.map(rent, RentDto.class)))
+                .build();
+        Rent savedRent = rentDao.save(resultRent);
+        if (savedRent == null) {
             throw new PermissionDeniedException(FAILED_SAVE_EXCEPTION);
         }
+        return mapper.map(savedRent, RentDto.class);
+    }
+
+    @Override
+    public RentDto addSubscription(SubscriptionRentDto rent) {
+        Rent resultRent = new Rent.Builder().withRentDate(LocalDateTime.now())
+                .withAccount(mapper.map(rent.getAccount(), Account.class))
+                .withRentalPoint(mapper.map(rent.getRentalPoint(), RentalPoint.class))
+                .withScooter(mapper.map(rent.getScooter(), Scooter.class))
+                .withSubscription(rent.getSubscription())
+                .withPrice(countFinalPrice(mapper.map(rent, RentDto.class)))
+                .build();
+        Rent savedRent = rentDao.save(resultRent);
+        if (savedRent == null) {
+            throw new PermissionDeniedException(FAILED_SAVE_EXCEPTION);
+        }
+        return mapper.map(savedRent, RentDto.class);
+    }
+
+    @Override
+    public RentDto setMileage(Long id, double mileage) {
+        Rent rentById = rentDao.getById(id);
+        if (rentById == null) {
+            throw new DataNotFoundException(RENT_NOT_FOUND_EXCEPTION);
+        }
+        rentById.setMileage(mileage);
+        Rent resultRent = rentDao.update(id, rentById);
         return mapper.map(resultRent, RentDto.class);
     }
 
@@ -65,17 +98,25 @@ public class RentService implements IRentService {
     }
 
     @Override
-    public List<RentDto> getRentalHistoryForAdministrator(Long scooterId) {
-        return rentDao.getRentalHistoryForAdministrator(scooterId).stream()
+    public List<RentDto> getHistoryForAdministrator(Long scooterId) {
+        List<RentDto> rentals = rentDao.getRentalHistoryForAdministrator(scooterId).stream()
                 .map(rent -> mapper.map(rent, RentDto.class))
                 .collect(Collectors.toList());
+        if (rentals.size() == 0) {
+            throw new DataNotFoundException(EMPTY_HISTORY_EXCEPTION);
+        }
+        return rentals;
     }
 
     @Override
-    public List<RentDto> getRentalHistoryForClient(LoginDto dto) {
-        return rentDao.getRentalHistoryForClient(accountDao.getUserByLogin(dto.getLogin())).stream()
+    public List<RentDto> getHistoryForClient(LoginDto dto) {
+        List<RentDto> rentals = rentDao.getRentalHistoryForClient(accountDao.getUserByLogin(dto.getLogin())).stream()
                 .map(rent -> mapper.map(rent, RentDto.class))
                 .collect(Collectors.toList());
+        if (rentals.size() == 0) {
+            throw new DataNotFoundException(EMPTY_HISTORY_EXCEPTION);
+        }
+        return rentals;
     }
 
     @Override
@@ -88,8 +129,8 @@ public class RentService implements IRentService {
             throw new DataNotFoundException(RENT_NOT_FOUND_EXCEPTION);
         }
         rent.setFinalPrice(newPrice);
-        rentDao.update(rentId, rent);
-        return mapper.map(rent, RentDto.class);
+        Rent updatedRent = rentDao.update(rentId, rent);
+        return mapper.map(updatedRent, RentDto.class);
     }
 
     @Override
@@ -103,17 +144,17 @@ public class RentService implements IRentService {
             throw new InvalidPriceException(INVALID_PRICE_EXCEPTION);
         }
         rent.setFinalPrice(newPrice);
-        rentDao.update(rentId, rent);
-        return mapper.map(rent, RentDto.class);
+        Rent updatedRent = rentDao.update(rentId, rent);
+        return mapper.map(updatedRent, RentDto.class);
     }
 
-    public Double countFinalPrice(RentDto rent){
-        ScooterPrice scooterPrice = scooterPriceDao.findByName(rent.getScooter().getType().name());
-        double finalPrice;
-        if(rent.getHours() != 0){
+    private Double countFinalPrice(RentDto rent) {
+        ScooterPrice scooterPrice = scooterPriceDao.findByName(rent.getScooter().getScooterPrice().getScooterType());
+        double finalPrice = 0;
+        if (rent.getHours() != 0) {
             finalPrice = scooterPrice.getPricePerHour() * rent.getHours();
             return finalPrice;
-        } else if(rent.getSubscription() != null){
+        } else if (rent.getSubscription() != null) {
             switch (rent.getSubscription()) {
                 case DAY:
                     finalPrice = scooterPrice.getSubscriptionPricePerDay();
@@ -129,6 +170,6 @@ public class RentService implements IRentService {
                     return finalPrice;
             }
         }
-        return 0.0;
+        return finalPrice;
     }
 }

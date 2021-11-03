@@ -1,13 +1,9 @@
-package com.senla.finalProject.dto;
+package com.senla.electric.scooter.rental.dto;
 
-import com.senla.finalProject.enums.ScooterType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import javax.websocket.server.ServerEndpoint;
-import java.util.List;
 
 @Getter
 @Setter
@@ -16,7 +12,7 @@ import java.util.List;
 public class ScooterDto {
 
     private Long id;
-    private ScooterType type;
+    private ScooterPriceDto scooterPrice;
     private String model;
     private String details;
     private int condition;

@@ -1,8 +1,8 @@
-package com.senla.finalProject;
+package com.senla.electric.scooter.rental;
 
-import com.senla.finalProject.iDao.IRentalPointDao;
-import com.senla.finalProject.model.RentalPoint;
-import com.senla.finalProject.model.Scooter;
+import com.senla.electric.scooter.rental.iDao.IRentalPointDao;
+import com.senla.electric.scooter.rental.model.RentalPoint;
+import com.senla.electric.scooter.rental.model.Scooter;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.criteria.CriteriaBuilder;

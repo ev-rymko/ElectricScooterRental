@@ -1,6 +1,6 @@
-package com.senla.finalProject.handler;
+package com.senla.electric.scooter.rental.handler;
 
-import com.senla.finalProject.exceptions.*;
+import com.senla.electric.scooter.rental.exceptions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

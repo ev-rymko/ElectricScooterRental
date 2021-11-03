@@ -1,4 +1,4 @@
-package com.senla.finalProject.model;
+package com.senla.electric.scooter.rental.model;
 
 import lombok.Getter;
 import lombok.Setter;

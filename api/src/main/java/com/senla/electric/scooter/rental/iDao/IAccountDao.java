@@ -1,6 +1,6 @@
-package com.senla.finalProject.iDao;
+package com.senla.electric.scooter.rental.iDao;
 
-import com.senla.finalProject.model.Account;
+import com.senla.electric.scooter.rental.model.Account;
 
 public interface IAccountDao extends IGenericDao<Account> {
 

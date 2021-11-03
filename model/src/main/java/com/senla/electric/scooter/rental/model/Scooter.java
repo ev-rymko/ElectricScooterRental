@@ -1,8 +1,6 @@
-package com.senla.finalProject.model;
+package com.senla.electric.scooter.rental.model;
 
-import com.senla.finalProject.enums.ScooterType;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -15,9 +13,9 @@ import java.util.List;
 @SequenceGenerator(name = "default_gen", sequenceName = "scooter_seq", allocationSize = 1)
 public class Scooter extends AbstractEntity {
 
-    @Column(name = "scooter_type")
-    @Enumerated(EnumType.STRING)
-    private ScooterType type;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "scooter_price_id", nullable = false)
+    private ScooterPrice scooterPrice;
     @Column(nullable = false)
     private String model;
     @Column(nullable = false)

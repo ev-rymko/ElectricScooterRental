@@ -1,4 +1,4 @@
-package com.senla.finalProject.enums;
+package com.senla.electric.scooter.rental.enums;
 
 public enum Subscription {
     DAY,

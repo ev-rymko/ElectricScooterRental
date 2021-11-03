@@ -1,7 +1,7 @@
-package com.senla.finalProject.security;
+package com.senla.electric.scooter.rental.security;
 
-import com.senla.finalProject.security.filter.CustomAuthenticationFilter;
-import com.senla.finalProject.security.filter.CustomAuthorizationFilter;
+import com.senla.electric.scooter.rental.security.filter.CustomAuthenticationFilter;
+import com.senla.electric.scooter.rental.security.filter.CustomAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,8 +42,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/login/**").permitAll();
         http.authorizeRequests().antMatchers(HttpMethod.POST, "/users").permitAll();
         http.authorizeRequests().antMatchers(HttpMethod.POST, "/admins").permitAll();
+
         http.authorizeRequests().antMatchers("/users/**").hasAnyAuthority("USER");
+        http.authorizeRequests().antMatchers("/rental-points/users/**,")
+                .hasAnyAuthority("USER");
+        http.authorizeRequests().antMatchers("/rentals/users/**").hasAnyAuthority("USER");
+        http.authorizeRequests().antMatchers("/scooters/users/**").hasAnyAuthority("USER");
+        http.authorizeRequests().antMatchers("scooter-prices/users/**").hasAnyAuthority("USER");
+
         http.authorizeRequests().antMatchers("/admins/**").hasAnyAuthority("ADMIN");
+        http.authorizeRequests().antMatchers("/rentals/admins/**").hasAnyAuthority("ADMIN");
+        http.authorizeRequests().antMatchers("/rental-points/admins/**").hasAnyAuthority("ADMIN");
+        http.authorizeRequests().antMatchers("/scooters/admins/**").hasAnyAuthority("ADMIN");
+        http.authorizeRequests().antMatchers("scooter-prices/admins/**").hasAnyAuthority("ADMIN");
+
         http.authorizeRequests().anyRequest().permitAll();
         http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);

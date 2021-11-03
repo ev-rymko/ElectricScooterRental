@@ -1,6 +1,6 @@
-package com.senla.finalProject.dto;
+package com.senla.electric.scooter.rental.dto;
 
-import com.senla.finalProject.enums.Subscription;
+import com.senla.electric.scooter.rental.enums.Subscription;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

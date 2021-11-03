@@ -1,7 +1,7 @@
-package com.senla.finalProject.iDao;
+package com.senla.electric.scooter.rental.iDao;
 
-import com.senla.finalProject.model.RentalPoint;
-import com.senla.finalProject.model.Scooter;
+import com.senla.electric.scooter.rental.model.RentalPoint;
+import com.senla.electric.scooter.rental.model.Scooter;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
-package com.senla.finalProject.model;
+package com.senla.electric.scooter.rental.model;
 
-import com.senla.finalProject.enums.Subscription;
+import com.senla.electric.scooter.rental.enums.Subscription;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,10 +31,67 @@ public class Rent extends AbstractEntity {
     @Column
     private int hours;
     @Column(name = "final_price", nullable = false)
-    private double finalPrice = 0;
+    private double finalPrice;
     @Column(nullable = false)
-    private double mileage = 0;
+    private double mileage;
 
     public Rent() {
+    }
+
+    public static class Builder {
+        private Rent newRent;
+
+        public Builder() {
+            newRent = new Rent();
+        }
+
+        public Builder withId(Long id){
+            newRent.id = id;
+            return this;
+        }
+
+       public Builder withRentDate(LocalDateTime rentDate){
+            newRent.rentDate = rentDate;
+            return this;
+       }
+
+       public Builder withAccount(Account account){
+            newRent.account = account;
+            return this;
+       }
+
+        public Builder withRentalPoint(RentalPoint rentalPoint){
+            newRent.rentalPoint = rentalPoint;
+            return this;
+        }
+
+        public Builder withScooter(Scooter scooter){
+            newRent.scooter = scooter;
+            return this;
+        }
+
+        public Builder withSubscription(Subscription subscription){
+            newRent.subscription = subscription;
+            return this;
+        }
+
+        public Builder withHours(int hours){
+            newRent.hours = hours;
+            return this;
+        }
+
+        public Builder withPrice(double finalPrice){
+            newRent.finalPrice = finalPrice;
+            return this;
+        }
+
+        public Builder withMileage(double mileage){
+            newRent.mileage = mileage;
+            return this;
+        }
+
+        public Rent build() {
+            return newRent;
+        }
     }
 }

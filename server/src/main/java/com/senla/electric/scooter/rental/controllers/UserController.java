@@ -1,9 +1,9 @@
-package com.senla.finalProject.controllers;
+package com.senla.electric.scooter.rental.controllers;
 
-import com.senla.finalProject.dto.AccountDto;
-import com.senla.finalProject.dto.UserDataDto;
-import com.senla.finalProject.dto.UserDto;
-import com.senla.finalProject.iService.IUserService;
+import com.senla.electric.scooter.rental.dto.AccountDto;
+import com.senla.electric.scooter.rental.dto.UserDataDto;
+import com.senla.electric.scooter.rental.dto.UserDto;
+import com.senla.electric.scooter.rental.iService.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,11 +19,10 @@ public class UserController {
     private final IUserService userService;
 
     @PostMapping
-    public ResponseEntity<String> addUser(@RequestBody UserDataDto dto) {
+    public ResponseEntity<UserDataDto> addUser(@RequestBody UserDataDto dto) {
         List<String> roles = new ArrayList<>();
         roles.add("USER");
-        userService.save(dto, roles);
-        return ResponseEntity.ok("The user has been successfully added.");
+        return ResponseEntity.ok(userService.save(dto, roles));
     }
 
     @PutMapping("/{id}")
@@ -39,7 +38,7 @@ public class UserController {
     }
 
     @DeleteMapping
-    public ResponseEntity<UserDataDto> deleteUser(@RequestParam UserDataDto dto) {
+    public ResponseEntity<UserDto> deleteUser(@RequestParam UserDataDto dto) {
         return ResponseEntity.ok(userService.delete(dto));
     }
 

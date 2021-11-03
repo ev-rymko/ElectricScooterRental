@@ -1,7 +1,7 @@
-package com.senla.finalProject;
+package com.senla.electric.scooter.rental;
 
-import com.senla.finalProject.iDao.IGenericDao;
-import com.senla.finalProject.model.AbstractEntity;
+import com.senla.electric.scooter.rental.iDao.IGenericDao;
+import com.senla.electric.scooter.rental.model.AbstractEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

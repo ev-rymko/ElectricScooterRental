@@ -1,6 +1,5 @@
-package com.senla.finalProject.dto;
+package com.senla.electric.scooter.rental.dto;
 
-import com.senla.finalProject.enums.ScooterType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +11,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ScooterPriceDto {
 
-    private ScooterType scooterType;
+    private Long id;
+    private String scooterType;
     private double pricePerHour;
     private double subscriptionPricePerDay;
 }

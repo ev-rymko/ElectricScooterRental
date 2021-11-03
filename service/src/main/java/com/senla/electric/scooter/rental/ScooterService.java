@@ -1,10 +1,10 @@
-package com.senla.finalProject;
+package com.senla.electric.scooter.rental;
 
-import com.senla.finalProject.dto.ScooterDto;
-import com.senla.finalProject.exceptions.DataNotFoundException;
-import com.senla.finalProject.iDao.IScooterDao;
-import com.senla.finalProject.iService.IScooterService;
-import com.senla.finalProject.model.Scooter;
+import com.senla.electric.scooter.rental.dto.ScooterDto;
+import com.senla.electric.scooter.rental.exceptions.DataNotFoundException;
+import com.senla.electric.scooter.rental.iDao.IScooterDao;
+import com.senla.electric.scooter.rental.iService.IScooterService;
+import com.senla.electric.scooter.rental.model.Scooter;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;

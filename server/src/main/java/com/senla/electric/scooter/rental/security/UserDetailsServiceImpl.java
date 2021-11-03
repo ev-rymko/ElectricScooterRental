@@ -1,8 +1,8 @@
-package com.senla.finalProject.security;
+package com.senla.electric.scooter.rental.security;
 
-import com.senla.finalProject.exceptions.DataNotFoundException;
-import com.senla.finalProject.iDao.IAccountDao;
-import com.senla.finalProject.model.Account;
+import com.senla.electric.scooter.rental.exceptions.DataNotFoundException;
+import com.senla.electric.scooter.rental.iDao.IAccountDao;
+import com.senla.electric.scooter.rental.model.Account;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

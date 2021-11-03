@@ -1,23 +1,29 @@
-package com.senla.finalProject.iService;
+package com.senla.electric.scooter.rental.iService;
 
-import com.senla.finalProject.dto.LoginDto;
-import com.senla.finalProject.dto.RentDto;
+import com.senla.electric.scooter.rental.dto.LoginDto;
+import com.senla.electric.scooter.rental.dto.RentDto;
+import com.senla.electric.scooter.rental.dto.RentForHourDto;
+import com.senla.electric.scooter.rental.dto.SubscriptionRentDto;
 
 import java.util.List;
 
 public interface IRentService {
 
-    RentDto save(RentDto rent);
+    RentDto addForHour(RentForHourDto rent);
+
+    RentDto addSubscription(SubscriptionRentDto rent);
 
     RentDto update(Long id, RentDto rent);
 
     List<RentDto> getAll();
 
-    List<RentDto> getRentalHistoryForAdministrator(Long scooterId);
+    List<RentDto> getHistoryForAdministrator(Long scooterId);
 
-    List<RentDto> getRentalHistoryForClient(LoginDto dto);
+    List<RentDto> getHistoryForClient(LoginDto dto);
 
     RentDto setPrice(Long rentId, double newPrice);
 
     RentDto setDiscount(Long rentId, int percent);
+
+    RentDto setMileage(Long id, double mileage);
 }
