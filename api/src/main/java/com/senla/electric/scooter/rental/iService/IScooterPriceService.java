@@ -1,7 +1,6 @@
 package com.senla.electric.scooter.rental.iService;
 
 import com.senla.electric.scooter.rental.dto.ScooterPriceDto;
-import com.senla.electric.scooter.rental.model.ScooterPrice;
 
 import java.util.List;
 
@@ -15,6 +14,6 @@ public interface IScooterPriceService {
 
     List<ScooterPriceDto> getAll();
 
-    ScooterPrice findByName(String name);
+    ScooterPriceDto findByName(String name);
 
 }

@@ -25,10 +25,10 @@ public class UserDao extends AbstractDao<User> implements IUserDao {
         criteriaQuery.select(userRoot);
         Predicate predicateForName
                 = cb.equal(userRoot.get("email"), email);
-        criteriaQuery.where(predicateForName);
+        criteriaQuery.where(cb.isNotNull(userRoot.get("email")), predicateForName);
         List<User> users = entityManager.createQuery(criteriaQuery)
                 .getResultList();
-        if(users.size() > 0) {
+        if(users != null && users.size() > 0) {
             return users.get(0);
         } else {
             return null;

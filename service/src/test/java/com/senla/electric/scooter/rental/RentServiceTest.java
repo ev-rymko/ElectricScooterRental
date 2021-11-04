@@ -4,7 +4,6 @@ import com.senla.electric.scooter.rental.dto.*;
 import com.senla.electric.scooter.rental.enums.Subscription;
 import com.senla.electric.scooter.rental.exceptions.DataNotFoundException;
 import com.senla.electric.scooter.rental.exceptions.InvalidPriceException;
-import com.senla.electric.scooter.rental.exceptions.PermissionDeniedException;
 import com.senla.electric.scooter.rental.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,9 +27,9 @@ public class RentServiceTest {
     @Mock
     RentDao rentDao;
     @Mock
-    AccountDao accountDao;
+    AccountService accountService;
     @Mock
-    ScooterPriceDao scooterPriceDao;
+    ScooterPriceService scooterPriceService;
     @Mock
     ModelMapper mapper;
 
@@ -74,7 +73,7 @@ public class RentServiceTest {
         rentDto.setHours(2);
 
         Mockito.when(rentDao.save(rent)).thenReturn(rent);
-        Mockito.when(scooterPriceDao.findByName(rentDto.getScooter().getScooterPrice().getScooterType())).thenReturn(scooterPrice);
+        Mockito.when(scooterPriceService.findByName(rentDto.getScooter().getScooterPrice().getScooterType())).thenReturn(scooterPriceDto);
 
         Mockito.when(mapper.map(dto.getAccount(), Account.class)).thenReturn(account);
         Mockito.when(mapper.map(dto.getScooter(), Scooter.class)).thenReturn(scooter);
@@ -82,6 +81,7 @@ public class RentServiceTest {
         Mockito.when(mapper.map(dto, Rent.class)).thenReturn(rent);
         Mockito.when(mapper.map(dto, RentDto.class)).thenReturn(rentDto);
         Mockito.when(mapper.map(rent, RentDto.class)).thenReturn(rentDto);
+        Mockito.when(mapper.map(scooterPriceDto, ScooterPrice.class)).thenReturn(scooterPrice);
 
         RentDto resultRent = rentService.addForHour(dto);
 
@@ -124,7 +124,7 @@ public class RentServiceTest {
         rentDto.setSubscription(Subscription.DAY);
 
         Mockito.when(rentDao.save(rent)).thenReturn(rent);
-        Mockito.when(scooterPriceDao.findByName(rentDto.getScooter().getScooterPrice().getScooterType())).thenReturn(scooterPrice);
+        Mockito.when(scooterPriceService.findByName(rentDto.getScooter().getScooterPrice().getScooterType())).thenReturn(scooterPriceDto);
 
         Mockito.when(mapper.map(dto.getAccount(), Account.class)).thenReturn(account);
         Mockito.when(mapper.map(dto.getScooter(), Scooter.class)).thenReturn(scooter);
@@ -132,6 +132,7 @@ public class RentServiceTest {
         Mockito.when(mapper.map(dto, Rent.class)).thenReturn(rent);
         Mockito.when(mapper.map(dto, RentDto.class)).thenReturn(rentDto);
         Mockito.when(mapper.map(rent, RentDto.class)).thenReturn(rentDto);
+        Mockito.when(mapper.map(scooterPriceDto, ScooterPrice.class)).thenReturn(scooterPrice);
 
         RentDto resultRent = rentService.addSubscription(dto);
 
@@ -195,10 +196,11 @@ public class RentServiceTest {
         scooterPriceDto.setScooterType("type");
         ScooterDto scooterDto = new ScooterDto();
         scooterDto.setScooterPrice(scooterPriceDto);
+        AccountDto accountDto = new AccountDto();
         RentDto rentDto = new RentDto();
         rentDto.setId(1L);
         rentDto.setRentDate(LocalDateTime.now());
-        rentDto.setAccount(new AccountDto());
+        rentDto.setAccount(accountDto);
         rentDto.setScooter(scooterDto);
         rentDto.setRentalPoint(new RentalPointDto());
         rentDto.setSubscription(Subscription.DAY);
@@ -208,7 +210,8 @@ public class RentServiceTest {
         Mockito.when(mapper.map(rent, RentDto.class)).thenReturn(rentDto);
         Mockito.when(mapper.map(rentDto, Rent.class)).thenReturn(rent);
 
-        Mockito.when(scooterPriceDao.findByName(rentDto.getScooter().getScooterPrice().getScooterType())).thenReturn(scooterPrice);
+        Mockito.when(scooterPriceService.findByName(rentDto.getScooter().getScooterPrice().getScooterType())).thenReturn(scooterPriceDto);
+        Mockito.when(mapper.map(scooterPriceDto, ScooterPrice.class)).thenReturn(scooterPrice);
 
         RentDto resultRent = rentService.update(1L, rentDto);
 
@@ -264,6 +267,7 @@ public class RentServiceTest {
     void getHistoryForClientTest() {
         LoginDto loginDto = new LoginDto("test", "test");
         Account account = new Account();
+        AccountDto accountDto = new AccountDto();
         Rent rent = new Rent();
         Rent rent1 = new Rent();
         RentDto dto = new RentDto();
@@ -271,7 +275,8 @@ public class RentServiceTest {
         Mockito.when(mapper.map(rent, RentDto.class)).thenReturn(dto);
         Mockito.when(mapper.map(rent1, RentDto.class)).thenReturn(dto);
         Mockito.when(rentDao.getRentalHistoryForClient(account)).thenReturn(Arrays.asList(rent, rent1));
-        Mockito.when(accountDao.getUserByLogin(loginDto.getLogin())).thenReturn(account);
+        Mockito.when(accountService.getUserByLogin(loginDto.getLogin())).thenReturn(accountDto);
+        Mockito.when(mapper.map(accountDto, Account.class)).thenReturn(account);
 
         List<RentDto> rentals = rentService.getHistoryForClient(loginDto);
         assertNotNull(rentals);
@@ -282,9 +287,11 @@ public class RentServiceTest {
     void getHistoryForClientWithExceptionTest() {
         LoginDto loginDto = new LoginDto("test", "test");
         Account account = new Account();
+        AccountDto accountDto = new AccountDto();
 
-        Mockito.when(accountDao.getUserByLogin(loginDto.getLogin())).thenReturn(account);
+        Mockito.when(accountService.getUserByLogin(loginDto.getLogin())).thenReturn(accountDto);
         Mockito.when(rentDao.getRentalHistoryForClient(account)).thenReturn(Collections.emptyList());
+        Mockito.when(mapper.map(accountDto, Account.class)).thenReturn(account);
 
         assertThrows(DataNotFoundException.class, () -> rentService.getHistoryForClient(loginDto));
     }

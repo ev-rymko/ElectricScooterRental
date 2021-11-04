@@ -1,6 +1,5 @@
 package com.senla.electric.scooter.rental.controllers;
 
-import com.senla.electric.scooter.rental.dto.AccountDto;
 import com.senla.electric.scooter.rental.dto.UserDataDto;
 import com.senla.electric.scooter.rental.dto.UserDto;
 import com.senla.electric.scooter.rental.iService.IUserService;
@@ -26,13 +25,13 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> updateUserData(@PathVariable Long id,
-                                                  @RequestParam UserDto dto) {
+    public ResponseEntity<UserDto> updateUser(@PathVariable Long id,
+                                                  @RequestBody UserDto dto) {
         return ResponseEntity.ok(userService.update(id, dto));
     }
 
     @DeleteMapping
-    public ResponseEntity<UserDto> deleteUser(@RequestParam UserDataDto dto) {
+    public ResponseEntity<UserDto> deleteUser(@RequestBody UserDataDto dto) {
         return ResponseEntity.ok(userService.delete(dto));
     }
 

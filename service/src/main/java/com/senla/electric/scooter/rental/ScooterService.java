@@ -30,14 +30,14 @@ public class ScooterService implements IScooterService {
 
     @Override
     public ScooterDto update(Long id, ScooterDto scooter) {
-        checkScooterById(id);
+        checkAndGetScooterById(id);
         Scooter resultScooter = scooterDao.update(id, mapper.map(scooter, Scooter.class));
         return mapper.map(resultScooter, ScooterDto.class);
     }
 
     @Override
     public ScooterDto delete(Long scooterId) {
-        Scooter scooterForDelete = checkScooterById(scooterId);
+        Scooter scooterForDelete = checkAndGetScooterById(scooterId);
         Scooter resultScooter = scooterDao.delete(scooterForDelete);
         return mapper.map(resultScooter, ScooterDto.class);
     }
@@ -49,7 +49,7 @@ public class ScooterService implements IScooterService {
                 .collect(Collectors.toList());
     }
 
-    private Scooter checkScooterById(Long id) {
+    private Scooter checkAndGetScooterById(Long id) {
         Scooter scooter = scooterDao.getById(id);
         if (scooter == null) {
             throw new DataNotFoundException(SCOOTER_NOT_FOUND_BY_ID_EXCEPTION);

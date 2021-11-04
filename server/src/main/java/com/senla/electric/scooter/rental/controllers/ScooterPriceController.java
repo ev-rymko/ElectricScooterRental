@@ -16,9 +16,9 @@ public class ScooterPriceController {
     private final IScooterPriceService scooterPriceService;
 
     @PostMapping("/admins")
-    public ResponseEntity<String> addScooterPrice(@RequestBody ScooterPriceDto dto) {
+    public ResponseEntity<ScooterPriceDto> addScooterPrice(@RequestBody ScooterPriceDto dto) {
         scooterPriceService.save(dto);
-        return ResponseEntity.ok("The scooter price has been successfully added.");
+        return ResponseEntity.ok(scooterPriceService.save(dto));
     }
 
     @PutMapping("/admins/{id}")

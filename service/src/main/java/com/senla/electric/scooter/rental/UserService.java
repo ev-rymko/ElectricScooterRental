@@ -32,20 +32,18 @@ public class UserService implements IUserService {
 
     @Override
     public UserDto save(UserDataDto user, List<String> roleNames) {
-        if (userDao.getAll().size() > 0) {
-            if (userDao.getUserByEmail(user.getEmail()) != null) {
-                throw new DataDuplicationException(USER_EMAIL_DUPLICATION_EXCEPTION);
-            }
+        if (userDao.getUserByEmail(user.getEmail()) != null) {
+            throw new DataDuplicationException(USER_EMAIL_DUPLICATION_EXCEPTION);
         }
         User registeredUser = new User();
         registeredUser.setFirstName(user.getFirstName());
         registeredUser.setSecondName(user.getSecondName());
         registeredUser.setEmail(user.getEmail());
 
-        accountService.save(user, roleNames, registeredUser);
-        userDao.save(registeredUser);
+        User savedUser = userDao.save(registeredUser);
+        accountService.save(user, roleNames, savedUser);
 
-        return mapper.map(registeredUser, UserDto.class);
+        return mapper.map(savedUser, UserDto.class);
     }
 
     @Override

@@ -26,23 +26,24 @@ public class ScooterPriceService implements IScooterPriceService {
 
     @Override
     public ScooterPriceDto save(ScooterPriceDto dto) {
-        if (dto.getPricePerHour() < 0 && dto.getSubscriptionPricePerDay() < 0) {
-            throw new InvalidPriceException(INVALID_PRICE_EXCEPTION);
-        }
+        checkPrice(dto.getPricePerHour());
+        checkPrice(dto.getSubscriptionPricePerDay());
         ScooterPrice scooterPrice = scooterPriceDao.save(mapper.map(dto, ScooterPrice.class));
         return mapper.map(scooterPrice, ScooterPriceDto.class);
     }
 
     @Override
     public ScooterPriceDto update(Long id, ScooterPriceDto dto) {
-        checkScooterPriceById(id);
+        checkPrice(dto.getPricePerHour());
+        checkPrice(dto.getSubscriptionPricePerDay());
+        checkAndGetScooterPriceById(id);
         ScooterPrice scooterPrice = scooterPriceDao.update(id, mapper.map(dto, ScooterPrice.class));
         return mapper.map(scooterPrice, ScooterPriceDto.class);
     }
 
     @Override
     public ScooterPriceDto delete(Long id) {
-        ScooterPrice scooterPriceForDelete = checkScooterPriceById(id);
+        ScooterPrice scooterPriceForDelete = checkAndGetScooterPriceById(id);
         ScooterPrice resultScooterPrice = scooterPriceDao.delete(scooterPriceForDelete);
         return mapper.map(resultScooterPrice, ScooterPriceDto.class);
     }
@@ -55,16 +56,22 @@ public class ScooterPriceService implements IScooterPriceService {
     }
 
     @Override
-    public ScooterPrice findByName(String name) {
-        return scooterPriceDao.findByName(name);
+    public ScooterPriceDto findByName(String name) {
+        return mapper.map(scooterPriceDao.findByName(name), ScooterPriceDto.class);
     }
 
-    private ScooterPrice checkScooterPriceById(Long id) {
+    private ScooterPrice checkAndGetScooterPriceById(Long id) {
         ScooterPrice scooterPrice = scooterPriceDao.getById(id);
         if (scooterPrice == null) {
             throw new DataNotFoundException(SCOOTER_PRICE_NOT_FOUND_EXCEPTION);
         } else {
             return scooterPrice;
+        }
+    }
+
+    private void checkPrice(double price) {
+        if (price < 0) {
+            throw new InvalidPriceException(INVALID_PRICE_EXCEPTION);
         }
     }
 }

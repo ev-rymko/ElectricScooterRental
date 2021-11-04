@@ -31,14 +31,14 @@ public class RentalPointService implements IRentalPointService {
 
     @Override
     public RentalPointDto update(Long id, RentalPointDto rentalPoint) {
-        checkRentalPointById(id);
+        checkAndGetRentalPointById(id);
         RentalPoint resultRentalPoint = rentalPointDao.update(id, mapper.map(rentalPoint, RentalPoint.class));
         return mapper.map(resultRentalPoint, RentalPointDto.class);
     }
 
     @Override
     public RentalPointDto delete(Long rentalPointId) {
-        RentalPoint rentalPointForDelete = checkRentalPointById(rentalPointId);
+        RentalPoint rentalPointForDelete = checkAndGetRentalPointById(rentalPointId);
         RentalPoint resultRentalPoint = rentalPointDao.delete(rentalPointForDelete);
         return mapper.map(resultRentalPoint, RentalPointDto.class);
     }
@@ -59,7 +59,7 @@ public class RentalPointService implements IRentalPointService {
 
     @Override
     public List<ScooterDto> getDetails(Long id) {
-        checkRentalPointById(id);
+        checkAndGetRentalPointById(id);
         return rentalPointDao.getDetails(id).stream()
                 .map(scooter -> mapper.map(scooter, ScooterDto.class))
                 .collect(Collectors.toList());
@@ -72,7 +72,7 @@ public class RentalPointService implements IRentalPointService {
                 .collect(Collectors.toList());
     }
 
-    private RentalPoint checkRentalPointById(Long id){
+    private RentalPoint checkAndGetRentalPointById(Long id){
         RentalPoint rentalPoint = rentalPointDao.getById(id);
         if (rentalPoint == null) {
             throw new DataNotFoundException(RENTAL_POINT_NOT_FOUND_EXCEPTION);

@@ -16,9 +16,8 @@ public class ScooterController {
     private final IScooterService scooterService;
 
     @PostMapping("/admins")
-    public ResponseEntity<String> addScooter(@RequestBody ScooterDto dto) {
-        scooterService.save(dto);
-        return ResponseEntity.ok("The scooter has been successfully added.");
+    public ResponseEntity<ScooterDto> addScooter(@RequestBody ScooterDto dto) {
+        return ResponseEntity.ok(scooterService.save(dto));
     }
 
     @PutMapping("/admins/{id}")

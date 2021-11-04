@@ -1,6 +1,7 @@
 package com.senla.electric.scooter.rental.controllers;
 
 import com.senla.electric.scooter.rental.dto.UserDataDto;
+import com.senla.electric.scooter.rental.dto.UserDto;
 import com.senla.electric.scooter.rental.iService.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class AdminController {
     private final IUserService userService;
 
     @PostMapping
-    public ResponseEntity<UserDataDto> addUser(@RequestBody UserDataDto dto) {
+    public ResponseEntity<UserDto> addUser(@RequestBody UserDataDto dto) {
         List<String> roles = new ArrayList<>();
         roles.add("USER");
         roles.add("ADMIN");

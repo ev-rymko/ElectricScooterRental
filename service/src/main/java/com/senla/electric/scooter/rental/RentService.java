@@ -61,7 +61,7 @@ public class RentService implements IRentService {
 
     @Override
     public RentDto setMileage(Long id, double mileage) {
-        Rent rentById = checkRentById(id);
+        Rent rentById = checkAndGetRentById(id);
         rentById.setMileage(mileage);
         Rent resultRent = rentDao.update(id, rentById);
         return mapper.map(resultRent, RentDto.class);
@@ -69,7 +69,7 @@ public class RentService implements IRentService {
 
     @Override
     public RentDto update(Long id, RentDto rent) {
-        Rent rentById = checkRentById(id);
+        Rent rentById = checkAndGetRentById(id);
         rent.setRentDate(rentById.getRentDate());
         rent.setFinalPrice(countFinalPrice(rent));
         Rent resultRent = rentDao.update(id, mapper.map(rent, Rent.class));
@@ -96,7 +96,9 @@ public class RentService implements IRentService {
 
     @Override
     public List<RentDto> getHistoryForClient(LoginDto dto) {
-        List<RentDto> rentals = rentDao.getRentalHistoryForClient(accountService.getUserByLogin(dto.getLogin())).stream()
+        List<RentDto> rentals = rentDao.getRentalHistoryForClient
+                        (mapper.map(accountService.getUserByLogin(dto.getLogin()), Account.class))
+                .stream()
                 .map(rent -> mapper.map(rent, RentDto.class))
                 .collect(Collectors.toList());
         if (rentals.size() == 0) {
@@ -108,7 +110,7 @@ public class RentService implements IRentService {
     @Override
     public RentDto setPrice(Long rentId, double newPrice) {
         checkPrice(newPrice);
-        Rent rent = checkRentById(rentId);
+        Rent rent = checkAndGetRentById(rentId);
         rent.setFinalPrice(newPrice);
         Rent updatedRent = rentDao.update(rentId, rent);
         return mapper.map(updatedRent, RentDto.class);
@@ -116,7 +118,7 @@ public class RentService implements IRentService {
 
     @Override
     public RentDto setDiscount(Long rentId, int percent) {
-        Rent rent = checkRentById(rentId);
+        Rent rent = checkAndGetRentById(rentId);
         double newPrice = (rent.getFinalPrice() * percent) / 100;
         checkPrice(newPrice);
         rent.setFinalPrice(newPrice);
@@ -125,7 +127,9 @@ public class RentService implements IRentService {
     }
 
     private Double countFinalPrice(RentDto rent) {
-        ScooterPrice scooterPrice = scooterPriceService.findByName(rent.getScooter().getScooterPrice().getScooterType());
+        ScooterPrice scooterPrice = mapper.map(
+                scooterPriceService.findByName(rent.getScooter().getScooterPrice().getScooterType()),
+                ScooterPrice.class);
         double finalPrice = 0;
         if (rent.getHours() != 0) {
             finalPrice = scooterPrice.getPricePerHour() * rent.getHours();
@@ -149,17 +153,17 @@ public class RentService implements IRentService {
         return finalPrice;
     }
 
-    private Rent checkRentById(Long id){
+    private Rent checkAndGetRentById(Long id) {
         Rent rent = rentDao.getById(id);
-        if(rent == null){
+        if (rent == null) {
             throw new DataNotFoundException(RENT_NOT_FOUND_EXCEPTION);
         } else {
             return rent;
         }
     }
 
-    private void checkPrice(double price){
-        if(price < 0){
+    private void checkPrice(double price) {
+        if (price < 0) {
             throw new InvalidPriceException(INVALID_PRICE_EXCEPTION);
         }
     }

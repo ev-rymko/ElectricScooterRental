@@ -1,6 +1,7 @@
 package com.senla.electric.scooter.rental.controllers;
 
 import com.senla.electric.scooter.rental.dto.AccountDto;
+import com.senla.electric.scooter.rental.dto.LoginDto;
 import com.senla.electric.scooter.rental.iService.IAccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,7 @@ public class AccountController {
 
     @PutMapping("/{id}")
     public ResponseEntity<AccountDto> updateAccountData(@PathVariable Long id,
-                                                        @RequestParam AccountDto dto) {
-        return ResponseEntity.ok(accountService.updateAccount(id, dto));
+                                                        @RequestBody LoginDto dto) {
+        return ResponseEntity.ok(accountService.update(id, dto));
     }
 }

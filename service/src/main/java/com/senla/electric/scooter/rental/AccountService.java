@@ -1,6 +1,7 @@
 package com.senla.electric.scooter.rental;
 
 import com.senla.electric.scooter.rental.dto.AccountDto;
+import com.senla.electric.scooter.rental.dto.LoginDto;
 import com.senla.electric.scooter.rental.dto.UserDataDto;
 import com.senla.electric.scooter.rental.exceptions.BadDataException;
 import com.senla.electric.scooter.rental.exceptions.DataDuplicationException;
@@ -34,10 +35,8 @@ public class AccountService implements IAccountService {
 
     @Override
     public AccountDto save(UserDataDto userDto, List<String> roleNames, User user) {
-        if (accountDao.getAll().size() > 0) {
-            if (accountDao.getUserByLogin(userDto.getLogin()) != null) {
-                throw new DataDuplicationException(ACCOUNT_LOGIN_DUPLICATION_EXCEPTION);
-            }
+        if (accountDao.getUserByLogin(userDto.getLogin()) != null) {
+            throw new DataDuplicationException(ACCOUNT_LOGIN_DUPLICATION_EXCEPTION);
         }
         Account account = new Account();
         account.setLogin(userDto.getLogin());
@@ -47,16 +46,19 @@ public class AccountService implements IAccountService {
                 .collect(Collectors.toList()));
         account.setUser(user);
 
-        accountDao.save(account);
-        return mapper.map(account, AccountDto.class);
+        Account savedAccount = accountDao.save(account);
+        return mapper.map(savedAccount, AccountDto.class);
     }
 
     @Override
-    public AccountDto updateAccount(Long id, AccountDto dto) {
-        if (accountDao.getById(id) == null) {
+    public AccountDto update(Long id, LoginDto dto) {
+        Account account = accountDao.getById(id);
+        if (account == null) {
             throw new BadDataException(ACCOUNT_NOT_FOUND_BY_ID_EXCEPTION);
         }
-        Account updateAccount = accountDao.update(id, mapper.map(dto, Account.class));
+        account.setLogin(dto.getLogin());
+        account.setPassword(encoder.encode(dto.getPassword()));
+        Account updateAccount = accountDao.update(id, account);
         return mapper.map(updateAccount, AccountDto.class);
     }
 
@@ -66,12 +68,12 @@ public class AccountService implements IAccountService {
         if (accountForDelete == null) {
             throw new DataNotFoundException(ACCOUNT_NOT_FOUND_BY_LOGIN_EXCEPTION);
         }
-        Account account = accountDao.delete(accountDao.getUserByLogin(user.getLogin()));
+        Account account = accountDao.delete(accountForDelete);
         return mapper.map(account, AccountDto.class);
     }
 
     @Override
-    public Account getUserByLogin(String login) {
-        return accountDao.getUserByLogin(login);
+    public AccountDto getUserByLogin(String login) {
+        return mapper.map(accountDao.getUserByLogin(login), AccountDto.class);
     }
 }

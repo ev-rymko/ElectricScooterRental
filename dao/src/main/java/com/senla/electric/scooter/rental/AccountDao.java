@@ -26,10 +26,10 @@ public class AccountDao extends AbstractDao<Account> implements IAccountDao {
         criteriaQuery.select(accountRoot);
         Predicate predicateForName
                 = cb.equal(accountRoot.get("login"), login);
-        criteriaQuery.where(predicateForName);
+        criteriaQuery.where(cb.isNotNull(accountRoot.get("login")), predicateForName);
         List<Account> accountList = entityManager.createQuery(criteriaQuery)
                 .getResultList();
-        if(accountList.size() > 0) {
+        if(accountList != null && accountList.size() > 0) {
             return accountList.get(0);
         } else {
             return null;

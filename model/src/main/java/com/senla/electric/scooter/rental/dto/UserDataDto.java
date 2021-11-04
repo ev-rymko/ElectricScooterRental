@@ -12,9 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UserDataDto {
 
-    @JsonIgnore
     private String login;
-    @JsonIgnore
     private String password;
     private String firstName;
     private String secondName;
