@@ -1,3 +1,7 @@
+CREATE DATABASE electric_scooter_rental;
+
+USE electric_scooter_rental;
+
 CREATE TABLE rental_point_seq (
     next_val BIGINT DEFAULT 0
 );
