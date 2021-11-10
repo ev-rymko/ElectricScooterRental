@@ -22,7 +22,7 @@ public class Rent extends AbstractEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rental_point_id", nullable = false)
     private RentalPoint rentalPoint;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "scooter_id", nullable = false)
     private Scooter scooter;
     @Column

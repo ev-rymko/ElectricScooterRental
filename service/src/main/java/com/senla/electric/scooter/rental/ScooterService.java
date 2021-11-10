@@ -49,6 +49,11 @@ public class ScooterService implements IScooterService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public void updateRentalPoint(Scooter scooter){
+        scooterDao.update(scooter.getId(), scooter);
+    }
+
     private Scooter checkAndGetScooterById(Long id) {
         Scooter scooter = scooterDao.getById(id);
         if (scooter == null) {

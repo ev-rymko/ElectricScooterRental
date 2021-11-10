@@ -22,8 +22,8 @@ public class Scooter extends AbstractEntity {
     private String details;
     @Column(name = "scooter_condition", nullable = false)
     private int condition = 5;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "rental_point_id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "rental_point_id")
     private RentalPoint rentalPoint;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "scooter")
     private List<Rent> rentList;

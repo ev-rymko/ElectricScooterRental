@@ -26,4 +26,6 @@ public interface IRentService {
     RentDto setDiscount(Long rentId, int percent);
 
     RentDto setMileage(Long id, double mileage);
+
+    RentDto finishTrip(Long id);
 }

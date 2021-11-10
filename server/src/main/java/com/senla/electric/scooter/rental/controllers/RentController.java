@@ -66,4 +66,9 @@ public class RentController {
                                                @RequestParam int percent) {
         return ResponseEntity.ok(rentService.setDiscount(id, percent));
     }
+
+    @PutMapping("/users/finish/{id}")
+    public ResponseEntity<RentDto> finishTrip(@PathVariable Long id){
+        return ResponseEntity.ok(rentService.finishTrip(id));
+    }
 }

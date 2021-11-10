@@ -5,6 +5,7 @@ import com.senla.electric.scooter.rental.enums.Subscription;
 import com.senla.electric.scooter.rental.exceptions.DataNotFoundException;
 import com.senla.electric.scooter.rental.exceptions.InvalidPriceException;
 import com.senla.electric.scooter.rental.model.*;
+import com.senla.electric.scooter.rental.state.StateUnavailable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -32,6 +33,8 @@ public class RentServiceTest {
     ScooterPriceService scooterPriceService;
     @Mock
     ModelMapper mapper;
+    @Mock
+    StateUnavailable stateUnavailable;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -82,7 +85,7 @@ public class RentServiceTest {
         Mockito.when(mapper.map(dto, RentDto.class)).thenReturn(rentDto);
         Mockito.when(mapper.map(rent, RentDto.class)).thenReturn(rentDto);
         Mockito.when(mapper.map(scooterPriceDto, ScooterPrice.class)).thenReturn(scooterPrice);
-
+        Mockito.doNothing().when(stateUnavailable).changeState(rent);
         RentDto resultRent = rentService.addForHour(dto);
 
         assertNotNull(resultRent);
@@ -133,6 +136,7 @@ public class RentServiceTest {
         Mockito.when(mapper.map(dto, RentDto.class)).thenReturn(rentDto);
         Mockito.when(mapper.map(rent, RentDto.class)).thenReturn(rentDto);
         Mockito.when(mapper.map(scooterPriceDto, ScooterPrice.class)).thenReturn(scooterPrice);
+        Mockito.doNothing().when(stateUnavailable).changeState(rent);
 
         RentDto resultRent = rentService.addSubscription(dto);
 

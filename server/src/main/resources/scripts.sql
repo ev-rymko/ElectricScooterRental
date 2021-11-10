@@ -30,7 +30,7 @@ CREATE TABLE scooters(
     model VARCHAR(200) NOT NULL,
     details VARCHAR(500) NOT NULL,
     scooter_condition INT NOT NULL DEFAULT 5,
-    rental_point_id BIGINT NOT NULL,
+    rental_point_id BIGINT,
     FOREIGN KEY (rental_point_id) REFERENCES rental_points (id),
     FOREIGN KEY (scooter_price_id) REFERENCES scooter_prices (id)
 );

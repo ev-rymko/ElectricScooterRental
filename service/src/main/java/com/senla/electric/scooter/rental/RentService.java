@@ -11,8 +11,11 @@ import com.senla.electric.scooter.rental.iService.IAccountService;
 import com.senla.electric.scooter.rental.iService.IScooterPriceService;
 import com.senla.electric.scooter.rental.model.*;
 import com.senla.electric.scooter.rental.iService.IRentService;
+import com.senla.electric.scooter.rental.state.State;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +35,10 @@ public class RentService implements IRentService {
     private final IAccountService accountService;
     private final IScooterPriceService scooterPriceService;
     private final ModelMapper mapper;
+    private final State unavailableState;
+    @Autowired
+    @Qualifier("available")
+    private State availableState;
 
     @Override
     public RentDto addForHour(RentForHourDto rent) {
@@ -43,6 +50,7 @@ public class RentService implements IRentService {
                 .withPrice(countFinalPrice(mapper.map(rent, RentDto.class)))
                 .build();
         Rent savedRent = rentDao.save(resultRent);
+        unavailableState.changeState(savedRent);
         return mapper.map(savedRent, RentDto.class);
     }
 
@@ -56,6 +64,7 @@ public class RentService implements IRentService {
                 .withPrice(countFinalPrice(mapper.map(rent, RentDto.class)))
                 .build();
         Rent savedRent = rentDao.save(resultRent);
+        unavailableState.changeState(savedRent);
         return mapper.map(savedRent, RentDto.class);
     }
 
@@ -151,6 +160,13 @@ public class RentService implements IRentService {
             }
         }
         return finalPrice;
+    }
+
+    @Override
+    public RentDto finishTrip(Long id){
+        Rent rent = checkAndGetRentById(id);
+        availableState.changeState(rent);
+        return mapper.map(rent, RentDto.class);
     }
 
     private Rent checkAndGetRentById(Long id) {
